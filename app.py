@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 import sqlite3
+from middleware.auth import token_required
 import jwt
 from flask_swagger_ui import get_swaggerui_blueprint
-from functools import wraps
+
 SWAGGER_URL="/swagger"
 API_URL="/swagger.json"
 
@@ -14,11 +15,6 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
     }
 )
 
-
-
-
-
-
 app = Flask(__name__)
 
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
@@ -28,28 +24,6 @@ def swagger():
     with open("swagger.json") as f:
         data = f.read()
     return data
-
-# Decorator to check if token is valid
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')  # Get token from query string
-        if token and token.startswith('Bearer '):
-            token = token.split(' ')[1]
-            
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
-
-        try:
-            data = jwt.decode(token, "secret", algorithms=["HS256"])
-            current_user = data['id']
-        except Exception as e:
-            print(e)
-            return jsonify({'message': 'Token is invalid!'}), 401
-
-        return f(current_user, *args, **kwargs)
-
-    return decorated
 
 
 @app.route('/addUser', methods=['POST'])
@@ -62,16 +36,6 @@ def addUser():
     cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
     con.commit()
     return jsonify({"status": "success"})
-
-@app.route('/getUserId', methods=['GET'])
-@token_required
-def getUserId(id):
-    con = sqlite3.connect("sqlite.db")
-    cur = con.cursor()
-    username = request.args.get('username')
-    cur.execute("SELECT id FROM users WHERE username = ?", (username,))
-    userId = cur.fetchone()[0]
-    return jsonify({"userId": userId})
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -98,8 +62,7 @@ def addTask(id):
     data = request.get_json()
     title = data['title']
     content = data['content']
-    userId = data['userId']
-    cur.execute("INSERT INTO tasks (title, content, userId) VALUES (?, ?, ?)", (title, content, userId))
+    cur.execute("INSERT INTO tasks (title, content, userId) VALUES (?, ?, ?)", (title, content, id))
     con.commit()
     return jsonify({"status": "success"})
 
@@ -108,8 +71,7 @@ def addTask(id):
 def getTasks(id):
     con = sqlite3.connect("sqlite.db")
     cur = con.cursor()
-    userId = request.args.get('userId')
-    cur.execute("SELECT * FROM tasks WHERE userId = ?", (userId,))
+    cur.execute("SELECT * FROM tasks WHERE userId = ?", (id,))
     tasks = cur.fetchall()
     return jsonify({"tasks": tasks})
 

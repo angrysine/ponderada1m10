@@ -33,15 +33,18 @@ def swagger():
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.args.get('token')  # Get token from query string
-
+        token = request.headers.get('Authorization')  # Get token from query string
+        if token and token.startswith('Bearer '):
+            token = token.split(' ')[1]
+            
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
 
         try:
             data = jwt.decode(token, "secret", algorithms=["HS256"])
             current_user = data['id']
-        except:
+        except Exception as e:
+            print(e)
             return jsonify({'message': 'Token is invalid!'}), 401
 
         return f(current_user, *args, **kwargs)
@@ -50,21 +53,19 @@ def token_required(f):
 
 
 @app.route('/addUser', methods=['POST'])
-@token_required
 def addUser():
     con = sqlite3.connect("sqlite.db")
     cur = con.cursor()
     data = request.get_json()
     username = data['username']
     password = data['password']
-    encoded_jwt = jwt.encode(password, "secret", algorithm="HS256")
-    cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, encoded_jwt))
+    cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
     con.commit()
     return jsonify({"status": "success"})
 
 @app.route('/getUserId', methods=['GET'])
 @token_required
-def getUserId():
+def getUserId(id):
     con = sqlite3.connect("sqlite.db")
     cur = con.cursor()
     username = request.args.get('username')
@@ -79,19 +80,19 @@ def login():
     data = request.get_json()
     username = data['username']
     password = data['password']
-    encoded_jwt = jwt.encode(password, "secret", algorithm="HS256")
-    cur.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, encoded_jwt))
+    cur.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
     user = cur.fetchone()
     if user:
-        token = jwt.encode({'id': user.id}, app.config['SECRET_KEY'])
-        return jsonify({'token': token.decode('UTF-8')})
+        print("user", user)
+        token = jwt.encode({'id': str(user[0])}, "secret", algorithm="HS256")
+        return jsonify({'token': token})
     else:
         return jsonify({"status": "failed user not found"})
 
 
 @app.route('/addTask', methods=['POST'])
 @token_required
-def addTask():
+def addTask(id):
     con = sqlite3.connect("sqlite.db")
     cur = con.cursor()
     data = request.get_json()
@@ -104,7 +105,7 @@ def addTask():
 
 @app.route('/getTasks', methods=['GET'])
 @token_required
-def getTasks():
+def getTasks(id):
     con = sqlite3.connect("sqlite.db")
     cur = con.cursor()
     userId = request.args.get('userId')
@@ -114,7 +115,7 @@ def getTasks():
 
 @app.route('/deleteTask', methods=['DELETE'])
 @token_required
-def deleteTask():
+def deleteTask(id):
     con = sqlite3.connect("sqlite.db")
     cur = con.cursor()
     title = request.args.get('title')
@@ -124,7 +125,7 @@ def deleteTask():
 
 @app.route('/updateTask', methods=['PUT'])
 @token_required
-def updateTask():
+def updateTask(id):
     con = sqlite3.connect("sqlite.db")
     cur = con.cursor()
     data = request.get_json()

@@ -20,4 +20,4 @@ python app.py
 
 O swagger da api estará disponível em `http://localhost:5000/swagger`
 
-O projeto contem uma coleção do insomnia para testar a api, disponível em `insomniaDoc.json`
+O projeto contem uma coleção do insomnia para testar a api, disponível em `insomniaDoc.json`, para usar as rotas no swagger deve se clicar  no cadeado no canto superior direito da tela e inserir "bearer token", substituindo "token" pelo token gerado ao criar um usuário.

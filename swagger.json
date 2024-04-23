@@ -8,6 +8,9 @@
       "/addUser": {
         "post": {
           "summary": "Add a new user",
+          "tags": [
+            "Tasks"
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -42,12 +45,20 @@
                 }
               }
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       },
       "/getUserId": {
         "get": {
           "summary": "Get user ID by username",
+          "tags": [
+            "Tasks"
+          ],
           "parameters": [
             {
               "in": "query",
@@ -73,12 +84,20 @@
                 }
               }
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       },
       "/addTask": {
         "post": {
           "summary": "Add a new task",
+          "tags": [
+            "Tasks"
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -116,12 +135,20 @@
                 }
               }
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       },
       "/getTasks": {
         "get": {
           "summary": "Get tasks by user ID",
+          "tags": [
+            "Tasks"
+          ],
           "parameters": [
             {
               "in": "query",
@@ -153,12 +180,20 @@
                 }
               }
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       },
       "/deleteTask": {
         "delete": {
           "summary": "Delete a task by title",
+          "tags": [
+            "Tasks"
+          ],
           "parameters": [
             {
               "in": "query",
@@ -184,12 +219,20 @@
                 }
               }
             }
-          }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
         }
       },
       "/updateTask": {
         "put": {
           "summary": "Update a task content by title",
+          "tags": [
+            "Tasks"
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -224,8 +267,72 @@
                 }
               }
             }
+          },
+          "security": [
+            {
+              "Bearer": []
+            }
+          ]
+        }
+      },
+      "/login": {
+        "post": {
+          "summary": "User login",
+          "tags": [
+            "Authentication"
+          ],
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "description": "User credentials",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            }
           }
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "Bearer": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
         }
       }
     }
   }
+  

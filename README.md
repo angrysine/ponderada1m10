@@ -12,16 +12,10 @@ pip install -r requirements.txt
 
 ## Execução
 
-Primeiramente se o banco de dados não existir execute o comando:
-
-```bash
-python create_table.py
-```
-
 Para executar o projeto, execute o comando:
 
 ```bash
-python app.py
+docker compose up
 ```
 
 O swagger da api estará disponível em `http://localhost:5000/swagger`

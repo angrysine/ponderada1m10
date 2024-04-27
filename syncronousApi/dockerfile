@@ -1,0 +1,19 @@
+FROM python:latest
+
+WORKDIR /app
+
+COPY . .
+
+ENV PYTHONPATH "${PYTHONPATH}:/app/"
+
+RUN pip3 install --upgrade pip
+
+RUN pip3 install -r requirements.txt
+
+EXPOSE 5000
+
+RUN touch sqlite.db
+
+RUN python create_table.py
+
+CMD ["python", "app.py"]

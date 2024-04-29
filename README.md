@@ -1,27 +1,3 @@
 # ponderada1m10
 
-Essa ponderada tem uma api de uma todo list, onde é possível adicionar, deletar, editar e listar tarefas, além de criar usuaŕios.
-
-## Instalação
-
-Para instalar as dependências do projeto, execute o comando:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Execução
-
-Para executar o projeto, execute o comando:
-
-```bash
-docker compose up
-```
-
-O swagger da api estará disponível em `http://localhost:5000/swagger`
-
-O projeto contem uma coleção do insomnia para testar a api, disponível em `insomniaDoc.json`, para usar as rotas no swagger deve se clicar  no cadeado no canto superior direito da tela e inserir "bearer token", substituindo "token" pelo token gerado ao criar um usuário. Se usar a coleção do insomnia, deve se passar no header o valor do token.
-
-## Video
-
-Segue aqui um video demonstração do funcionamento da aplicação: [Video](https://youtu.be/lw6sFVI_TJc)
+Essa ponderada contem duas ponderadas que podem ser executadas separadamente, uma api assincrona e uma api sincrona. Elas tambeḿ podem ser executadas juntas, para isso basta executar o comando `docker compose up` na raiz do projeto. Para acessar o readme da api assincrona [clique aqui](./asyncronousApi/README.md) e para acessar o readme da api sincrona [clique aqui](./syncronousApi/README.md).

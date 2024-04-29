@@ -7,4 +7,4 @@ services:
   api-asynchronous-service:
     build: ./asyncrhonousApi/
     ports:
-      - "8001:8001"
+      - "5001:5001"
